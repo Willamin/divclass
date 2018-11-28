@@ -2,37 +2,30 @@ require "xml"
 require "./ignored_tags"
 
 module Divclass
-  VERSION     = {{ `shards version #{__DIR__}`.chomp.stringify }}
-  TAG         = /\<.*\>/m
-  BANG_TAG    = /\<\!.*\>/m
-  CLOSING_TAG = /\<\/.*\>/m
+  VERSION = {{ `shards version #{__DIR__}`.chomp.stringify }}
 
-  def self.closing_tag(input : String) : String
-    match_data = input.match(/\<\/(.*)\>/)
-    return input if IGNORE_TAGS.includes?(match_data.try(&.[1]))
-    "</div>"
+  def self.translate(input : IO)
+    translate(input.gets_to_end)
   end
 
   def self.translate(input : String) : String
-    input.gsub(TAG) do |match|
-      case match
-      when .=~ BANG_TAG    then return match
-      when .=~ CLOSING_TAG then return closing_tag(match)
+    document = XML.parse_html(input, options: XML::HTMLParserOptions.default | XML::HTMLParserOptions::NOIMPLIED | XML::HTMLParserOptions::NODEFDTD)
+
+    translate(document)
+    document.to_xml(options: XML::SaveOptions::NO_DECL | XML::SaveOptions::AS_HTML)
+  end
+
+  def self.translate(node : XML::Node) : XML::Node
+    if node.element? && !IGNORE_TAGS.includes?(node.name)
+      if node["class"]?
+        node["class"] = node.name + " " + node["class"]
+      else
+        node["class"] = node.name
       end
 
-      nodes = XML.parse(match).children
-
-      name = nodes[0].name
-      return match if IGNORE_TAGS.includes?(name)
-
-      old_class = nodes[0]["class"]?
-
-      classes = [] of String
-      classes << name
-      classes << old_class if old_class
-      new_class = classes.join(" ")
-
-      %[<div class="#{new_class}">]
+      node.name = "div"
     end
+    node.children.each { |child| translate(child) }
+    node
   end
 end

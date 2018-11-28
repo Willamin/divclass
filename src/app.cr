@@ -1,5 +1,4 @@
 require "./divclass"
+require "stdimp/string/puts"
 
-STDIN.each_line do |line|
-  STDOUT.puts Divclass.translate(line)
-end
+Divclass.translate(STDIN).puts(STDOUT)

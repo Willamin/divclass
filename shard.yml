@@ -17,6 +17,8 @@ development_dependencies:
     github: ragmaanir/microtest
     # version: ~> 1.2.0
     branch: master
+  stdimp:
+    github: willamin/stdimp
 
 # dependencies:
 #   name:
