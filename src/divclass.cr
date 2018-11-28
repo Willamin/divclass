@@ -3,9 +3,9 @@ require "./ignored_tags"
 
 module Divclass
   VERSION     = {{ `shards version #{__DIR__}`.chomp.stringify }}
-  TAG         = /\<.*\>/
-  BANG_TAG    = /\<\!.*\>/
-  CLOSING_TAG = /\<\/.*\>/
+  TAG         = /\<.*\>/m
+  BANG_TAG    = /\<\!.*\>/m
+  CLOSING_TAG = /\<\/.*\>/m
 
   def self.closing_tag(input : String) : String
     match_data = input.match(/\<\/(.*)\>/)
@@ -35,8 +35,4 @@ module Divclass
       %[<div class="#{new_class}">]
     end
   end
-end
-
-STDIN.each_line do |line|
-  STDOUT.puts Divclass.translate(line)
 end

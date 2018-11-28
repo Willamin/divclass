@@ -24,4 +24,13 @@ describe Divclass do
   test "that normal opening tags with class work" do
     assert Divclass.translate(%[<div class="text-center">]) == %[<div class="text-center">]
   end
+
+  test "that newlines in tags work" do
+    tag = <<-TAG
+    <card
+      class="text-center"
+    >
+    TAG
+    assert Divclass.translate(tag) == %[<div class="card text-center">]
+  end
 end

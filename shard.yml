@@ -6,7 +6,7 @@ authors:
 
 targets:
   divclass:
-    main: src/divclass.cr
+    main: src/app.cr
 
 crystal: 0.27.0
 
